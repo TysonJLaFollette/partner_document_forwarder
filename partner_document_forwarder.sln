@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "partner_document_forwarder_api", "partner_document_forwarder_api\partner_document_forwarder_api.csproj", "{81873005-E793-4261-9704-A310876BF421}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{81873005-E793-4261-9704-A310876BF421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81873005-E793-4261-9704-A310876BF421}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81873005-E793-4261-9704-A310876BF421}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81873005-E793-4261-9704-A310876BF421}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

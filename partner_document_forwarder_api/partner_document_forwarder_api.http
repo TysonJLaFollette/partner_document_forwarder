@@ -1,0 +1,6 @@
+@partner_document_forwarder_api_HostAddress = http://localhost:5087
+
+GET {{partner_document_forwarder_api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
