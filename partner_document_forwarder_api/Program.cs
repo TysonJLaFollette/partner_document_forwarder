@@ -1,9 +1,7 @@
-//using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -16,7 +14,6 @@ var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha2
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    // Add JWT Authentication
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -43,7 +40,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Add JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -57,39 +53,31 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = "partner_document_forwarder_frontend",
 
             ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = signingKey,
-            IssuerSigningKeys = null,
+            ClockSkew = TimeSpan.Zero,
 
-            ClockSkew = TimeSpan.Zero
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = signingKey
         };
     });
 
-// Add Authorization
 builder.Services.AddAuthorization();
-
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// ? Add middleware
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Public endpoint (login)
 app.MapPost("/login", (UserLogin login) =>
 {
-    if (login.Username == "admin" && login.Password == "password")
+    if (login.Username == "you-should" && login.Password == "hire-me")
     {
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity([
-                new Claim(JwtRegisteredClaimNames.Sub, "me")
+                new Claim(JwtRegisteredClaimNames.Sub, "admin")
             ]),
             Expires = DateTime.UtcNow.AddMinutes(60),
             SigningCredentials = credentials,
@@ -106,15 +94,109 @@ app.MapPost("/login", (UserLogin login) =>
     return Results.Unauthorized();
 });
 
-// Protected endpoint
 app.MapGet("/secret", () => "You are authorized!")
    .RequireAuthorization();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.MapGet("/businessPartners", () => new Dictionary<int, string>()
 {
-    app.MapOpenApi();
-}
+    {1, "Eastman Genetics"},
+    {2, "Beltotech"},
+    {3, "The Carl Veiss Institute"}
+}).RequireAuthorization();
+
+app.MapGet("/clients", () => new Dictionary<int, string>()
+{
+    {1, "Elizabeth Yan"},
+    {2, "Manshukar Haljoze"},
+    {3, "Isaac Vuukar"}
+}).RequireAuthorization();
+
+app.MapGet("/documents/{businessPartnerId}", (int businessPartnerId) => {
+    if (businessPartnerId == 1)
+    {
+        return new List<int>{
+            1,
+            2,
+            3
+        };
+    }
+    else if (businessPartnerId == 2)
+    {
+        return new List<int>{
+            4,
+            5,
+            6
+        };
+    }
+    else if (businessPartnerId == 3)
+    {
+        return new List<int>{
+            7,
+            8
+        };
+    } else
+    {
+        return new List<int>();
+    }
+}).RequireAuthorization();
+
+app.MapGet("/document/{documentId}", (int documentId) => {
+    if (documentId == 1)
+    {
+        var imagePath = "wwwroot/images/example.png"; // adjust path as needed
+        var contentType = "image/png"; // or "image/jpeg", etc.
+        return Results.File(imagePath, contentType);
+    }
+    else if (documentId == 2)
+    {
+        var imagePath = "wwwroot/images/example.png"; // adjust path as needed
+        var contentType = "image/png"; // or "image/jpeg", etc.
+        return Results.File(imagePath, contentType);
+    }
+    else if (documentId == 3)
+    {
+        var imagePath = "wwwroot/images/example.png"; // adjust path as needed
+        var contentType = "image/png"; // or "image/jpeg", etc.
+        return Results.File(imagePath, contentType);
+    }
+    else if (documentId == 4)
+    {
+        var imagePath = "wwwroot/images/example.png"; // adjust path as needed
+        var contentType = "image/png"; // or "image/jpeg", etc.
+        return Results.File(imagePath, contentType);
+    }
+    else if (documentId == 5)
+    {
+        var imagePath = "wwwroot/images/example.png"; // adjust path as needed
+        var contentType = "image/png"; // or "image/jpeg", etc.
+        return Results.File(imagePath, contentType);
+    }
+    else if (documentId == 6)
+    {
+        var imagePath = "wwwroot/images/example.png"; // adjust path as needed
+        var contentType = "image/png"; // or "image/jpeg", etc.
+        return Results.File(imagePath, contentType);
+    }
+    else if (documentId == 7)
+    {
+        var imagePath = "wwwroot/images/example.png"; // adjust path as needed
+        var contentType = "image/png"; // or "image/jpeg", etc.
+        return Results.File(imagePath, contentType);
+    }
+    else if (documentId == 8)
+    {
+        var imagePath = "wwwroot/images/example.png"; // adjust path as needed
+        var contentType = "image/png"; // or "image/jpeg", etc.
+        return Results.File(imagePath, contentType);
+    }
+    else {
+        return Results.NoContent();
+    }
+}).RequireAuthorization();
+
+app.MapGet("/censored/{documentId}", (int documentId) => {
+    //Send the selected image to the AI for censoring.
+}).RequireAuthorization();
 
 app.UseHttpsRedirection();
 
