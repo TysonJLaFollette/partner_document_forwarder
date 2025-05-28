@@ -2,19 +2,12 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
-
-IdentityModelEventSource.ShowPII = true;
-IdentityModelEventSource.LogCompleteSecurityArtifact = true;
 
 var secretKey = "your-32-character-very-secret-key!!";
 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
@@ -23,8 +16,6 @@ var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha2
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-
     // Add JWT Authentication
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -33,7 +24,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Enter 'Bearer' [space] and then your valid JWT token.\n\nExample: Bearer abc123xyz"
+        Description = "Enter your JWT token **without** the 'Bearer ' prefix."
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -56,25 +47,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Events = new JwtBearerEvents
-        {
-            OnAuthenticationFailed = context =>
-            {
-                Console.WriteLine($"Authentication failed: {context.Exception}");
-                return Task.CompletedTask;
-            },
-            OnMessageReceived = context =>
-            {
-                var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-                if (!string.IsNullOrEmpty(token))
-                {
-                    var handler = new JsonWebTokenHandler();
-                    var jwt = handler.ReadToken(token);
-                    //Console.WriteLine($"Incoming JWT kid: {jwt.Header.Kid ?? "(none)"}");
-                }
-                return Task.CompletedTask;
-            },
-        };
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -91,8 +63,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
             ClockSkew = TimeSpan.Zero
         };
-        Console.WriteLine("IssuerSigningKey: " + options.TokenValidationParameters.IssuerSigningKey?.KeyId);
-        Console.WriteLine("IssuerSigningKeys: " + options.TokenValidationParameters.IssuerSigningKeys?.ToList().ToString());
     });
 
 // Add Authorization
@@ -116,23 +86,6 @@ app.MapPost("/login", (UserLogin login) =>
 {
     if (login.Username == "admin" && login.Password == "password")
     {
-        //var claims = new[]
-        //{
-        //    new Claim(ClaimTypes.Name, login.Username),
-        //};
-
-        //var token = new JwtSecurityToken(
-        //    issuer: "partner_document_forwarder_api",
-        //    audience: "partner_document_forwarder_frontend",
-        //    claims: claims,
-        //    expires: DateTime.UtcNow.AddHours(1),
-        //    signingCredentials: credentials
-        //);
-
-        //var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-
-
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity([
