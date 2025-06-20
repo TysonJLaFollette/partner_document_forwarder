@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using partner_document_forwarder_api.Authenticator;
 using partner_document_forwarder_api.BusinessPartner;
+using partner_document_forwarder_api.Client;
 
 string secretKey = "your-32-character-very-secret-key!!";
 SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
@@ -43,6 +44,8 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddSingleton<IAuthenticator>(new ExampleCoAuthService(secretKey));
 builder.Services.AddTransient<IBusinessPartnerPersister>(c => new NoDatabaseBusinessPartnerPersister());
 builder.Services.AddTransient<BusinessPartnerToolbox>(c => new BusinessPartnerToolbox());
+builder.Services.AddTransient<IClientPersister>(c => new NoDatabaseClientPersister());
+builder.Services.AddTransient<ClientToolbox>(c => new ClientToolbox());
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -90,11 +93,12 @@ app.MapGet("/businessPartners", () => {
     return dropdown;
 }).RequireAuthorization();
 
-app.MapGet("/clients", () => new Dictionary<int, string>()
-{
-    {1, "Elizabeth Yan"},
-    {2, "Manshukar Haljoze"},
-    {3, "Isaac Vuukar"}
+app.MapGet("/clients", () => {
+    ICollection<Client> clients
+        = app.Services.GetRequiredService<IClientPersister>().GetClients();
+    Dictionary<int, string> dropdown
+        = app.Services.GetRequiredService<ClientToolbox>().MakeDictionary(clients);
+    return dropdown;
 }).RequireAuthorization();
 
 app.MapGet("/documents/{businessPartnerId}", (int businessPartnerId) => {
