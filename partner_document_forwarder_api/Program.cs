@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -7,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using partner_document_forwarder_api.Authenticator;
 using partner_document_forwarder_api.BusinessPartner;
 using partner_document_forwarder_api.Client;
+using partner_document_forwarder_api.Document;
 
 string secretKey = "your-32-character-very-secret-key!!";
 SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
@@ -46,6 +48,8 @@ builder.Services.AddTransient<IBusinessPartnerPersister>(c => new NoDatabaseBusi
 builder.Services.AddTransient<BusinessPartnerToolbox>(c => new BusinessPartnerToolbox());
 builder.Services.AddTransient<IClientPersister>(c => new NoDatabaseClientPersister());
 builder.Services.AddTransient<ClientToolbox>(c => new ClientToolbox());
+builder.Services.AddTransient<IDocumentPersister>(c => new NoDatabaseDocumentPersister());
+builder.Services.AddTransient<DocumentToolbox>(c => new DocumentToolbox());
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -88,46 +92,27 @@ app.MapGet("/secret", () => "You are authorized!")
 app.MapGet("/businessPartners", () => {
     ICollection<BusinessPartner> businessPartners 
         = app.Services.GetRequiredService<IBusinessPartnerPersister>().GetBusinessPartners();
-    Dictionary<int,string> dropdown
+    Dictionary<int,string> businessPartnersDictionary
         = app.Services.GetRequiredService<BusinessPartnerToolbox>().MakeDictionary(businessPartners);
-    return dropdown;
+    return businessPartnersDictionary;
 }).RequireAuthorization();
 
 app.MapGet("/clients", () => {
     ICollection<Client> clients
         = app.Services.GetRequiredService<IClientPersister>().GetClients();
-    Dictionary<int, string> dropdown
+    Dictionary<int, string> clientsDictionary
         = app.Services.GetRequiredService<ClientToolbox>().MakeDictionary(clients);
-    return dropdown;
+    return clientsDictionary;
 }).RequireAuthorization();
 
 app.MapGet("/documents/{businessPartnerId}", (int businessPartnerId) => {
-    if (businessPartnerId == 1)
-    {
-        return new List<int>{
-            1,
-            2,
-            3
-        };
-    }
-    else if (businessPartnerId == 2)
-    {
-        return new List<int>{
-            4,
-            5,
-            6
-        };
-    }
-    else if (businessPartnerId == 3)
-    {
-        return new List<int>{
-            7,
-            8
-        };
-    } else
-    {
-        return new List<int>();
-    }
+    ICollection<partner_document_forwarder_api.Document.Document> documents
+        = app.Services.GetRequiredService<IDocumentPersister>().GetDocuments()
+        .Where(x => x.businessPartnerId == businessPartnerId)
+        .ToList();
+    Dictionary<int, string> documentsDictionary
+        = app.Services.GetRequiredService<DocumentToolbox>().MakeDictionary(documents);
+    return documentsDictionary;
 }).RequireAuthorization();
 
 app.MapGet("/document/{documentId}", (int documentId) => {

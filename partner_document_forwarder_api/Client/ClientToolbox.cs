@@ -1,17 +1,17 @@
 ﻿namespace partner_document_forwarder_api.Client
 {
     /// <summary>
-    /// The BusinessPartnerToolbox contains a variety of widely used helper functions for 
-    /// working with BusinessPartner information. 
+    /// The ClientToolbox contains a variety of widely used helper functions for 
+    /// working with Client information. 
     /// </summary>
     public class ClientToolbox
     {
-        public Dictionary<int, string> MakeDictionary(ICollection<Client> businessPartners)
+        public Dictionary<int, string> MakeDictionary(ICollection<Client> clients)
         {
             Dictionary<int, string> dropdown = new Dictionary<int, string>();
-            foreach (Client partner in businessPartners)
+            foreach (Client client in clients)
             {
-                dropdown.Add(partner.id, partner.name);
+                dropdown.Add(client.id, client.name);
             }
             return dropdown;
         }
