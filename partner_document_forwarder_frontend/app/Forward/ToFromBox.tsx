@@ -1,5 +1,5 @@
 'use client';
-import { Card, Typography } from "@mui/material";
+import { Card, MenuItem, Select, Typography } from "@mui/material";
 
 export default function ToFromBox() {
   return (
@@ -10,7 +10,30 @@ export default function ToFromBox() {
         </Typography>
       </div>
       <div className="p-1">
-        <p>Send anonymized document from PARTNERDROPDOWN to CLIENTDROPDOWN.</p>
+        <span>Send anonymized document from </span>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={1}
+          label="Age"
+          onChange={() =>{}}
+        >
+          <MenuItem value={10}>Ten</MenuItem>
+          <MenuItem value={20}>Twenty</MenuItem>
+          <MenuItem value={30}>Thirty</MenuItem>
+        </Select>
+        <span> to </span>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={1}
+          label="Age"
+          onChange={() => {}}
+        >
+          <MenuItem value={10}>Ten</MenuItem>
+          <MenuItem value={20}>Twenty</MenuItem>
+          <MenuItem value={30}>Thirty</MenuItem>
+        </Select>
       </div>
     </Card>
   );

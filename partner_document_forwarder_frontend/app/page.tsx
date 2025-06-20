@@ -1,6 +1,6 @@
 'use client';
 import ForwardForm from "./Forward/ForwardForm";
-import { AppBar, createTheme, IconButton, Toolbar, ThemeProvider } from "@mui/material";
+import { AppBar, createTheme, IconButton, Toolbar, ThemeProvider, Box } from "@mui/material";
 
 const theme = createTheme({
   typography: {
@@ -23,7 +23,9 @@ export default function Home() {
               </IconButton>
             </Toolbar>
           </AppBar>
-          <ForwardForm></ForwardForm>
+          <Box className="p-1 flex justify-center">
+            <ForwardForm></ForwardForm>
+          </Box>
     </ThemeProvider>
   );
 }
