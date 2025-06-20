@@ -23,7 +23,6 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - Unit tests for the ForwardForm React component.
 - Move secret key to user secrets repository
 - Get Stable Diffusion license and secrets
-- Extract authx code from program.cs to an authenticator class.
 - Create skeleton of image censorer class.
 - Create logic layer classes for working with each business object type.
 - Unit tests for logic layer transformation functions.

@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using partner_document_forwarder_api.Authenticator;
+
+string secretKey = "your-32-character-very-secret-key!!";
+SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
 var builder = WebApplication.CreateBuilder(args);
-
-var secretKey = "your-32-character-very-secret-key!!";
-var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -39,6 +39,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+builder.Services.AddSingleton(new Authenticator(secretKey));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -72,26 +73,7 @@ app.UseAuthorization();
 
 app.MapPost("/login", (UserLogin login) =>
 {
-    if (login.Username == "you-should" && login.Password == "hire-me")
-    {
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity([
-                new Claim(JwtRegisteredClaimNames.Sub, "admin")
-            ]),
-            Expires = DateTime.UtcNow.AddMinutes(60),
-            SigningCredentials = credentials,
-            Issuer = "partner_document_forwarder_api",
-            Audience = "partner_document_forwarder_frontend"
-        };
-
-        var handler = new JsonWebTokenHandler();
-        string token = handler.CreateToken(tokenDescriptor);
-
-        return Results.Ok(new { token = token });
-    }
-
-    return Results.Unauthorized();
+    return app.Services.GetRequiredService<Authenticator>().UserLogin(login.Username, login.Password);
 });
 
 app.MapGet("/secret", () => "You are authorized!")
