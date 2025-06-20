@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using partner_document_forwarder_api.Authenticator;
+using partner_document_forwarder_api.BusinessPartner;
 
 string secretKey = "your-32-character-very-secret-key!!";
 SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
@@ -40,6 +41,8 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 builder.Services.AddSingleton<IAuthenticator>(new ExampleCoAuthService(secretKey));
+builder.Services.AddTransient<IBusinessPartnerPersister>(c => new NoDatabaseBusinessPartnerPersister());
+builder.Services.AddTransient<BusinessPartnerToolbox>(c => new BusinessPartnerToolbox());
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -79,11 +82,12 @@ app.MapPost("/login", (UserLogin login) =>
 app.MapGet("/secret", () => "You are authorized!")
    .RequireAuthorization();
 
-app.MapGet("/businessPartners", () => new Dictionary<int, string>()
-{
-    {1, "Eastman Genetics"},
-    {2, "Beltotech"},
-    {3, "The Carl Veiss Institute"}
+app.MapGet("/businessPartners", () => {
+    ICollection<BusinessPartner> businessPartners 
+        = app.Services.GetRequiredService<IBusinessPartnerPersister>().GetBusinessPartners();
+    Dictionary<int,string> dropdown
+        = app.Services.GetRequiredService<BusinessPartnerToolbox>().MakeDictionary(businessPartners);
+    return dropdown;
 }).RequireAuthorization();
 
 app.MapGet("/clients", () => new Dictionary<int, string>()
