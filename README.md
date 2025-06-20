@@ -20,8 +20,11 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Todo List
+- Make UI for logging in
+- Make UI store login token.
 - Unit tests for the ForwardForm React component.
 - Move secret key to user secrets repository
+- Move audience and issuer strings to user secrets repo.
 - Get Stable Diffusion license and secrets
 - Create skeleton of image censorer class.
 - Create logic layer classes for working with each business object type.

@@ -39,7 +39,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-builder.Services.AddSingleton(new Authenticator(secretKey));
+builder.Services.AddSingleton<IAuthenticator>(new ExampleCoAuthService(secretKey));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -73,7 +73,7 @@ app.UseAuthorization();
 
 app.MapPost("/login", (UserLogin login) =>
 {
-    return app.Services.GetRequiredService<Authenticator>().UserLogin(login.Username, login.Password);
+    return app.Services.GetRequiredService<IAuthenticator>().UserLogin(login.Username, login.Password);
 });
 
 app.MapGet("/secret", () => "You are authorized!")
