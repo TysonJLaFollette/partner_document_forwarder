@@ -10,6 +10,7 @@ using partner_document_forwarder_api.BusinessPartner;
 using partner_document_forwarder_api.Client;
 using partner_document_forwarder_api.Document;
 
+//This WILL be moved to a secrets repository.
 string secretKey = "your-32-character-very-secret-key!!";
 SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
@@ -171,6 +172,12 @@ app.MapGet("/document/{documentId}", (int documentId) => {
 
 app.MapGet("/censored/{documentId}", (int documentId) => {
     //Send the selected image to the AI for censoring.
+    //Fetch the credentials secret from the secret repository.
+    //Make a post request to the AI service's login endpoint.
+    //Store the token they give us.
+    //Make a post(?) request to the AI service's edit endpoint with our prompt and image.
+    //Store the edited image they give us.
+    //Return the edited image to the frontend.
 }).RequireAuthorization();
 
 app.UseHttpsRedirection();

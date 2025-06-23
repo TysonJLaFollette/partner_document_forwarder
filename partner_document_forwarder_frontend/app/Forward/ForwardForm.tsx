@@ -5,10 +5,22 @@ import CensorNowBox from "./CensorNowBox";
 import VerifyCensorBox from "./VerifyCensorBox";
 import SendBox from "./SendBox";
 import ResultBox from "./ResultBox";
-import { Paper, Typography } from "@mui/material";
+import { createTheme, Paper, ThemeProvider, Typography } from "@mui/material";
+
+const theme = createTheme({
+  typography: {
+    h1: {
+      fontSize: '48pt',
+    },
+    h2: {
+      fontSize: '30pt',
+    },
+  },
+});
 
 export default function ForwardForm() {
   return (
+    <ThemeProvider theme={theme}>
     <Paper className="w-3/4 bg-gray-50 border overflow-hidden">
       <div className="bg-blue-200 p-1 shadow-md">
         <Typography variant="h1">
@@ -27,6 +39,6 @@ export default function ForwardForm() {
         </div>
       </div>
     </Paper>
-    
+    </ThemeProvider>
   );
 }

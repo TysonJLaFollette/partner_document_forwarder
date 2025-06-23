@@ -1,31 +1,29 @@
-'use client';
 import ForwardForm from "./Forward/ForwardForm";
-import { AppBar, createTheme, IconButton, Toolbar, ThemeProvider, Box } from "@mui/material";
+import { AppBar, createTheme, IconButton, Toolbar, ThemeProvider, Box, Typography } from "@mui/material";
+import LoginForm from "./Login/LoginForm";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 
-const theme = createTheme({
-  typography: {
-    h1: {
-      fontSize: '48pt',
-    },
-    h2: {
-      fontSize: '30pt',
-    },
-  },
-});
+export default async function Home() {
+  var content;
+  var session = await getServerSession(authOptions);
+  const userIsLoggedIn = session?.user?.email != null;
+  if (userIsLoggedIn){
+    content = <ForwardForm></ForwardForm>
+  } else {
+    content = <LoginForm></LoginForm>
+  }
 
-export default function Home() {
   return (
-    <ThemeProvider theme={theme}>
-      <AppBar position="static">
-            <Toolbar variant="dense">
-              <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
-                ExampleCo
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-          <Box className="p-1 flex justify-center">
-            <ForwardForm></ForwardForm>
-          </Box>
-    </ThemeProvider>
+    <>
+      <Box className="w-full flex justify-left bg-blue-200 border-b shadow-md">
+          <Typography variant="h3">
+            ExampleCo
+          </Typography>
+      </Box>
+      <Box className="p-1 flex justify-center">
+        {content}
+      </Box>
+      </>
   );
 }
