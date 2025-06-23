@@ -30,6 +30,10 @@ The Partner Document Forwarder is a conventional two-part web-app consisting of 
 - Include retry and circuit breaker wrappers before even writing any HTTP requests.
 - Create two authx interfaces in each project: One for the app providing logins to outsiders, and one for the app logging in to other services.
 
+## Some Numbers
+- It took rough 1.5 hours to get the Jest testing environment working. A significant portion (0.5hr) was because of my attempts to write tests for a complicated server component. Now having documented the process I could do it significantly faster. I find that even still that running the app is overwritign my 'jsx' setting in tsconfig.ts and breaking Jest tests.
+- Writing each test takes perhaps 5 minutes. More complicated tests that check for invokations or types take roughly the same time as simple ones... IF you use a tool like ChatGPT to find the needed syntax. ChatGPT's LLM is boss at navigating the complex grammar of unfamiliar parts of an API.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
