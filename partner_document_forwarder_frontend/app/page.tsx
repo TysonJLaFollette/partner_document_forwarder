@@ -6,8 +6,8 @@ import { authOptions } from "./api/auth/[...nextauth]/route";
 
 export default async function Home() {
   var content;
-  var session = await getServerSession(authOptions);
-  const userIsLoggedIn = session?.user?.email != null;
+  //var session = await getServerSession(authOptions);
+  const userIsLoggedIn = true;//session?.user?.email != null;
   if (userIsLoggedIn){
     content = <ForwardForm></ForwardForm>
   } else {

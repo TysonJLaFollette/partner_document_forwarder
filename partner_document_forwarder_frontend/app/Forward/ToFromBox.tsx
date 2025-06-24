@@ -1,7 +1,19 @@
 'use client';
 import { Card, MenuItem, Select, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 
 export default function ToFromBox() {
+  const [businessPartners, setBusinessPartners] = useState<Record<number, string>>({});
+
+  useEffect(() => {
+    fetch('/api/businessPartners')
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('RAW response:', data);
+        setBusinessPartners(data)
+      });
+  }, []);
+  
   return (
     <Card className="w-3/4 m-auto h-full bg-gray-50 rounded-md border overflow-hidden shadow-md">
       <div className="w-full bg-blue-100 p-1 shadow-md">
@@ -12,22 +24,26 @@ export default function ToFromBox() {
       <div className="p-1">
         <span>Send anonymized document from </span>
         <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={1}
-          label="Age"
+          labelId="business-partner-select-label"
+          id="business-partner-select"
+          data-testid="business-partner-select"
+          value={""}
+          label="Business Partner"
           onChange={() =>{}}
         >
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
+          {
+            Object.entries(businessPartners).map(([id, name]) => (
+              <MenuItem key={id} value={id}>{name}</MenuItem>
+            ))
+          }
         </Select>
         <span> to </span>
         <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={1}
-          label="Age"
+          labelId="client-select-label"
+          id="client-select"
+          data-testid="client-select"
+          value={10}
+          label="Client"
           onChange={() => {}}
         >
           <MenuItem value={10}>Ten</MenuItem>
